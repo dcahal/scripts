@@ -1,5 +1,6 @@
 #!/bin/sh
 
+channel="$1"
 if [ -z "$2" ] ; then
     quality="best"
 else
@@ -16,8 +17,16 @@ else
     esac
 fi
 
-mpv --ytdl-format="$quality" https://twitch.tv/"$1" > /dev/null 2>&1 &
-echo $?
+start_mpv() {
+    mpv --ytdl-format="$quality" https://twitch.tv/"$channel" > /dev/null 2>&1 &
+    return
+}
+
+start_mpv 
+
 if [ "$?" = 2 ] ; then
-    echo 'Twitch channel "$1" is offline or not found.'
+    echo Twitch channel "$1" is offline or not found.
+    
 fi
+
+
