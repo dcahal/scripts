@@ -1254,14 +1254,14 @@ yy
 
 sub init_random_objects {
 	return (
-#		\&add_ship,
-#		\&add_whale,
-#		\&add_monster,
-#		\&add_shark,
+		\&add_ship,
+		\&add_whale,
+		\&add_monster,
+		\&add_shark,
 		\&add_fishhook,
-#		\&add_swan,
-#		\&add_ducks,
-#		\&add_dolphins,
+		\&add_swan,
+		\&add_ducks,
+		\&add_dolphins,
 	);
 }
 
