@@ -1172,7 +1172,7 @@ q{
 		callback_args	=> [ 0, [@path] ],
 		death_cb	=> \&random_object,
 		die_offscreen	=> 0,
-		default_color	=> 'blue',
+		default_color	=> 'BLUE',
 	);
 	
 	my $dolphin2 = $anim->new_entity(
@@ -1194,7 +1194,7 @@ q{
 		# have the lead dolphin tell the others to die offscreen, since they start offscreen
 		death_cb	=> sub{ $dolphin2->die_offscreen(1); $dolphin3->die_offscreen(1) },
 		die_offscreen	=> 1,
-		default_color	=> 'CYAN',
+		default_color	=> 'BLUE',
 	);
 	
 }
