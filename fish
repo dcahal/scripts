@@ -540,7 +540,6 @@ sub fish_collision {
 			last;
 		} elsif($col_obj->type eq 'hook_point') {
 			retract($col_obj);
-			retract($fish);
 			# get the hook and line
 			my $hook = $anim->get_entities_of_type('fishhook')->[0];
 			my $line = $anim->get_entities_of_type('fishline')->[0];
@@ -699,18 +698,18 @@ sub add_fishhook {
 q{
        o
       ||
-      ||
+ .    ||
 / \   ||
-  \__//
+ \\\\__//
   `--' 
 };
 
 	my $point_image =
 q{
-.
- 
-\
- 
+
+
+
+
 };
 	my $line_image = "|\n"x50 . " \n"x6;
 
@@ -744,7 +743,7 @@ q{
 	$anim->new_entity(
 		type		=> 'hook_point',
 		shape		=> $point_image,
-		position	=> [ $point_x, $point_y, $depth{'shark'}+1 ],
+		position	=> [ $point_x+5, $point_y-2, $depth{'shark'}+1 ],
 		depth		=> $depth{'fish_end'} - $depth{'fish_start'},
 		callback_args	=> undef,
 		physical	=> 1,
@@ -1255,14 +1254,14 @@ yy
 
 sub init_random_objects {
 	return (
-		\&add_ship,
-		\&add_whale,
-		\&add_monster,
-		\&add_shark,
+#		\&add_ship,
+#		\&add_whale,
+#		\&add_monster,
+#		\&add_shark,
 		\&add_fishhook,
-		\&add_swan,
-		\&add_ducks,
-		\&add_dolphins,
+#		\&add_swan,
+#		\&add_ducks,
+#		\&add_dolphins,
 	);
 }
 
