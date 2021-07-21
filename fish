@@ -87,6 +87,12 @@ sub main {
 	#nodelay(1);
 
 	$anim->color(1);
+	use_default_colors();
+	my $cid = 1;
+	for my $f ('WHITE', 'RED', 'GREEN', 'BLUE', 'CYAN', 'MAGENTA', 'YELLOW', 'BLACK') {
+        init_pair($cid, eval "Curses::COLOR_$f", -1);
+        $cid++;
+    }
 
 	my $start_time = time;
 	my $paused = 0;
