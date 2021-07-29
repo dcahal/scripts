@@ -2,4 +2,4 @@
 
 bang="!$1"
 shift
-exec w3m https://lite.duckduckgo.com/lite/?q="$bang $*"
+exec w3m https://lite.duckduckgo.com/lite/?kd=-1\&kp=-1\&q="$bang $*"
