@@ -1,0 +1,5 @@
+#!/bin/sh
+
+bang="!$1"
+shift
+exec w3m https://lite.duckduckgo.com/lite/?q="$bang $*"
