@@ -17,6 +17,18 @@ else
     esac
 fi
 
+case $1 in
+    [k][o][n] )
+        channel="konquesting"
+        ;;
+    [z][a][r][i][c] )
+        channel="zhakaron"
+        ;;
+    [r][o][b]|[r][w][x] )
+        channel="rwxrob"
+        ;;
+esac
+
 start_mpv() {
     mpv --ytdl-format="$quality" https://twitch.tv/"$channel" > /dev/null 2>&1 &
     return
