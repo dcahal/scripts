@@ -18,10 +18,10 @@ else
 fi
 
 case $1 in
-    [k][o][n] )
+    [k][o][n]|[k][q] )
         channel="konquesting"
         ;;
-    [z][a][r][i][c] )
+    [z][a][r][i][c]|[z][z] )
         channel="zhakaron"
         ;;
     [r][o][b]|[r][w][x] )
