@@ -1,4 +1,4 @@
 #!/bin/sh
 
-cmd=$(which "$1")
+cmd=$(command -v "$1")
 echo ${cmd##*/}
