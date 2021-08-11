@@ -68,6 +68,7 @@ if [ $found = 0 ] ; then
     fi
 elif [ "$1" = "flatpak" ] || [ "$1" = "f" ] ; then
     flatpak update
+    exit
 elif [ -z "$1" ] ; then
     echo "Already up to date."
 else
