@@ -39,7 +39,8 @@ pid="$(pgrep -f $channel)"
 wait $pid
 
 if [ "$?" = 2 ] ; then
-    echo Twitch channel "$1" is offline or not found.
+    echo Twitch channel "\"$channel\"" is offline or not found.
+alias log='touch "$(date +%Y%m%d-%H%M-%N)"'
     
 fi
 
