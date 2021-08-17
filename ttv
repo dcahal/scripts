@@ -34,7 +34,9 @@ start_mpv() {
     return
 }
 
-start_mpv 
+start_mpv
+pid="$(pgrep -f $channel)"
+wait $pid
 
 if [ "$?" = 2 ] ; then
     echo Twitch channel "$1" is offline or not found.
