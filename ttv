@@ -35,13 +35,9 @@ start_mpv() {
 }
 
 start_mpv
-pid="$(pgrep -f $channel)"
-wait $pid
 
 if [ "$?" = 2 ] ; then
     echo Twitch channel "\"$channel\"" is offline or not found.
-alias log='touch "$(date +%Y%m%d-%H%M-%N)"'
-    
 fi
 
 
