@@ -21,13 +21,12 @@ needs_root() {
 
 link="$(curl https://github.com/GloriousEggroll/proton-ge-custom/releases/latest 2>/dev/null | grep -o '"http.*"')"
 version="$(echo "$link" | grep -o '[0-9].*[0-9]-GE-[0-9]-*')"
-echo "Real catch: $version"
-version="6.9-GE-3" 
+tarball="Proton-$version"
 echo "Downloading from ${link}"
 
 install() {
-    wget https://github.com/GloriousEggroll/proton-ge-custom/releases/download/"${version}"/"${version}".tar.gz -O - 2>/dev/null | tar xz &&
-    mv "$version" /home/kon/.steam/root/compatibilitytools.d/
+    wget https://github.com/GloriousEggroll/proton-ge-custom/releases/download/"${version}"/"${tarball}".tar.gz -O - 2>/dev/null | tar xz &&
+    mv "$tarball" /home/kon/.steam/root/compatibilitytools.d/
 }
 
 printf "Installing Proton %s to ~/.steam/root/compatibilitytools.d/\n" "$version"
