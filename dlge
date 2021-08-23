@@ -1,0 +1,36 @@
+#!/bin/sh
+
+needs_root() {
+    user="$(id -u 2>/dev/null)"
+    exists() {
+        command -v "$@" > /dev/null 2>&1
+    }
+
+    asRoot='sh -c'
+        if [ "$user" != 0 ]; then
+            if exists sudo; then
+                asRoot='sudo -E sh -c'
+            elif exists su; then
+                asRoot='su -c'
+            else
+                printf "\033[1;31mCan't get permission to install to system directory. Quitting.\033[m\n"
+                exit 1
+            fi
+        fi
+}
+
+link="$(curl https://github.com/GloriousEggroll/proton-ge-custom/releases/latest 2>/dev/null | grep -o '"http.*"')"
+version="$(echo "$link" | grep -o '[0-9].*[0-9]-GE-[0-9]-*')"
+echo "Real catch: $version"
+version="6.9-GE-3" 
+echo "Downloading from ${link}"
+
+install() {
+    wget https://github.com/GloriousEggroll/proton-ge-custom/releases/download/"${version}"/"${version}".tar.gz -O - 2>/dev/null | tar xz &&
+    mv "$version" /home/kon/.steam/root/compatibilitytools.d/
+}
+
+printf "Installing Proton %s to ~/.steam/root/compatibilitytools.d/\n" "$version"
+
+install &&
+echo "Done!"
