@@ -1,16 +1,23 @@
 #!/bin/sh
 
 link="$(curl https://github.com/GloriousEggroll/proton-ge-custom/releases/latest 2>/dev/null | grep -o '"http.*"')"
-version="$(echo "$link" | grep -o '[0-9].*[0-9]-GE-[0-9]-*')"
-tarball="Proton-$version"
+tag="$(echo "$link" | grep -o '[0-9].*[0-9]-GE-[0-9]-*')"
+
+# Project uses two different tagging schemes. Match for second if first is not matched.
+if [ -z "${tag}" ] ; then
+    tag="$(echo "$link" | grep -o 'GE-Proton[0-9]-[0-9]*[0-9]')"
+    tarball="${tag}"
+else
+    tarball="Proton-${tag}"
+fi
+
 echo "Downloading from ${link}"
 
 install() {
-    wget https://github.com/GloriousEggroll/proton-ge-custom/releases/download/"${version}"/"${tarball}".tar.gz -O - 2>/dev/null | tar xz &&
-    mv "$tarball" /home/kon/.steam/root/compatibilitytools.d/
+    wget https://github.com/GloriousEggroll/proton-ge-custom/releases/download/"${tag}"/"${tarball}".tar.gz --show-progress -qO - | tar -xzC "${HOME}"/.steam/root/compatibilitytools.d/
 }
 
-printf "Installing Proton %s to ~/.steam/root/compatibilitytools.d/\n" "$version"
+printf "Installing Proton %s to ~/.steam/root/compatibilitytools.d/\n" "$tag"
 
 install &&
 echo "Done!"
