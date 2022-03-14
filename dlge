@@ -14,7 +14,17 @@ fi
 echo "Downloading from ${link}"
 
 install() {
-    wget https://github.com/GloriousEggroll/proton-ge-custom/releases/download/"${tag}"/"${tarball}".tar.gz --show-progress -qO - | tar -xzC "${HOME}"/.steam/root/compatibilitytools.d/
+    wget https://github.com/GloriousEggroll/proton-ge-custom/releases/download/"${tag}"/"${tarball}".tar.gz --show-progress -qO - | tee >(tar -xzC "${HOME}"/.steam/root/compatibilitytools.d/) >(sha512sum -)
+}
+
+checksum() {
+    valid=$(wget https://github.com/GloriousEggroll/proton-ge-custom/releases/download/"${tag}"/"${tarball}".sha512sum -qO - | cut -f 1 | sha512sum)
+    tarhash=$(wget https://github.com/GloriousEggroll/proton-ge-custom/releases/download/"${tag}"/"${tarball}".tar.gz -qO - | sha512sum -)
+    if [ "${tarhash}" = "${valid}" ] ; then
+        echo "File checksum MATCHED!"
+    else
+        echo "Checksum MISMATCH! Please verify file integrity."
+    fi
 }
 
 printf "Installing Proton %s to ~/.steam/root/compatibilitytools.d/\n" "$tag"
