@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# paramst [parameter]
+#     Get the plaintext value of given entry in AWS Parameter Store.
+
+aws ssm get-parameter --name $1 --with-decryption | jq -r '.Parameter.Value'
