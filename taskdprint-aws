@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# taskdprint [task]
+#  Prints the full latest revision of the given task definition.
+
+aws ecs describe-task-definition --task-definition $(aws ecs list-task-definitions | grep ${1} | cut -d'"' -f 2 | tail -n 1) | jq

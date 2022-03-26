@@ -1,0 +1,2 @@
+#!/bin/sh
+aws ecs execute-command --cluster ${1} --task ${2} --container ${3} --command "$4" --interactive
