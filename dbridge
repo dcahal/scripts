@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# Shows the all container addresses running on the bridge network.
+
+docker network inspect bridge --format '{{json .}}' | jq '.Containers[]'
