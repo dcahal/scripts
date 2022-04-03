@@ -1,0 +1,40 @@
+#!/bin/sh
+
+# Terminal output for system info and KDE desktop information similar to kinfocenter
+
+print_apps() {
+    exists() {
+        command -v "$@" > /dev/null 2>&1
+    }
+
+    for app in konsole dolphin kcalc kate kwrite spectacle kdeconnect-cli kdenlive ; do
+       exists $app 
+       if [ $? = 0 ] ; then
+           printf "KDE Gear: "
+           $app --version | cut -d ' ' -f 2
+           break
+       fi
+    done
+}
+
+lsb_release -idrc
+
+printf "\n"
+
+plasmashell --version
+kf5-config --version
+
+printf "\n"
+print_apps
+printf "\n"
+
+printf "CPU: "
+lscpu | awk -F ': +' '/Model name:/ {print $2}'
+printf "GPU:"
+glxinfo | awk -F ':|\\(' '/Device:/ {print $2}'
+#lspci -mm | grep "VGA" | cut -d '"' -f 6
+
+printf "\n"
+
+printf "System uptime:"
+uptime -p | cut -d "p" -f 2
