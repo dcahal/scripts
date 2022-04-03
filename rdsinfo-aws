@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# rdsinfo [cluster] [field]
+#     DatabaseName
+#     EndPoint
+#     Status
+#     Engine
+#     EngineMode (to find serverless)
+
+aws rds describe-db-clusters --db-cluster-identifier "${1}" | jq -r ".DBClusters[] | .${2}"

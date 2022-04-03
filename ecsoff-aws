@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# ecsoff [cluster] [service]
+#   Ends all running tasks and services on the cluster and keeps it "ACTIVE" but idle.
+
+aws ecs update-service --desired-count 0 --cluster "$1" --service "$2"
