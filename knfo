@@ -8,8 +8,7 @@ print_apps() {
     }
 
     for app in konsole dolphin kcalc kate kwrite spectacle kdeconnect-cli kdenlive ; do
-       exists $app 
-       if [ $? = 0 ] ; then
+       if exists $app ; then
            printf "KDE Gear: "
            $app --version | cut -d ' ' -f 2
            break
