@@ -1,0 +1,24 @@
+#!/bin/sh
+
+DRUPAL_ENV=dev-mars
+
+# VPC ID
+VPCID=$(aws ec2 describe-vpcs | jq -r ".Vpcs[] | select((.Tags[]|select(.Key==\"Name\")|.Value) | match(\"$DRUPAL_ENV\") ) | .VpcId")
+echo $VPCID
+
+# Subnets
+PVT_SUBNETS=$(aws ec2 describe-subnets | jq -r ".Subnets[] | select(.VpcId == \"$VPCID\") | select((.Tags[] | select(.Key == \"Name\") | .Value) | contains(\"private\")) | .SubnetId" | sed -z 's/\n/,/g;s/,$/\n/')
+echo $PVT_SUBNETS
+
+# Database Security Group
+DBSG=$(aws ec2 describe-security-groups | jq -r ".SecurityGroups[] | select(.VpcId == \"$VPCID\") | select(.GroupName | contains(\"mysql\")) | .GroupId" | sed -z 's/\n/,/g;s/,$//')
+echo "$DBSG"
+
+
+# EFS Security Group
+FSSG=$(aws ec2 describe-security-groups | jq -r ".SecurityGroups[] | select(.VpcId == \"$VPCID\") | select(.GroupName | contains(\"efs\")) | .GroupId" | sed -z 's/\n/,/g;s/,$//')
+echo $FSSG
+
+
+echo "$DBSG,$FSSG"
+# aws ecs start-task --cluster dev-mars --task-definition dev-mars-cron:3 --network-configuration awsvpcConfiguration={subnets=["${PVT_SUBNETS}"],securityGroups=["${DBSG},${FSSG}"],assignPublicIp="DISABLED"
