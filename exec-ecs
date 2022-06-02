@@ -1,0 +1,52 @@
+#!/bin/sh
+
+# HOW TO:
+# exec-drush.sh [ command ] [ environment ]
+# exec-drush.sh cr dev
+
+my_dev_account=
+my_prod_account=
+
+cmd=$1
+drupal_env=$2
+
+aws=$(command -v aws)
+ssm=$(command -v session-manager-plugin)
+
+if test -z ${aws} || test -z ${ssm} ; then
+    echo "ERROR: This script requires AWS CLI and Session Manager plugin to run."
+    echo "  See https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html"
+    exit 1
+fi
+
+account=$(aws sts get-caller-identity --query 'Account' --output text)
+
+if test ${account} = ${my_prod_account} && test ${drupal_env} = "upper" ; then
+    printf "\033[1;33mRunning as ADMIN on UPPER stage environment!\033[m\n"
+    task=$(aws ecs list-tasks --cluster ${drupal_env}-fam --family ${drupal_env}-fam-drupal | awk -F '/' '/fam/ {print $3}' | head -n 1 | tr -d '",')
+    aws ecs execute-command --cluster ${drupal_env}-fam --task ${task} --container drupal --command "${cmd}" --interactive
+    exit
+fi
+
+case $drupal_env in
+    "dev" )
+        ;;
+    "test" )
+        ;;
+    "upper" )
+        echo "Permission denied: Only admins may run on upper. If you are an admin, please use the UPPER account."
+        exit 1
+        ;;
+    *)
+        echo "ERROR: Not a valid environment. Please choose dev or test."
+        exit 1
+        ;;
+esac
+
+
+test ${account} != "my_dev_account" && 
+echo "ERROR: Please confirm and export credentials for Development (lower) profile. Check ~/.aws/credentials or AWS SSO start page.\n  Example: export AWS_PROFILE=AccountID_SSOname" &&
+exit 1
+
+task=$(aws ecs list-tasks --cluster ${drupal_env}-fam --family ${drupal_env}-fam-drupal | awk -F '/' '/fam/ {print $3}' | head -n 1 | tr -d '",')
+aws ecs execute-command --cluster ${drupal_env}-fam --task ${task} --container drupal --command "${cmd}" --interactive
