@@ -1,0 +1,23 @@
+#!/bin/sh
+
+set -eu
+
+scripts_dir="~/code/dc/scripts"
+cd "${scripts_dir}"
+
+cmd=$1
+path_cmd=$(command -v ${cmd})
+script_inode=$(stat -t ${cmd} | cut -d' ' -f8)
+path_inode=$(stat -t ${path_cmd} | cut -d' ' -f8)
+
+if [ "${script_inode}" = "${path_inode}" ] ; then
+    echo "Script in PATH already matches file in git repo. Nothing to do."
+    exit
+fi
+
+git restore "${cmd}" &&
+    echo "Restoring ${cmd} from local git HEAD."
+cat "${cmd}" > "${path_cmd}" &&
+    echo "Overwriting script in PATH with copy from repo."
+ln "${path_cmd}" "${cmd}" &&
+    echo "Hard linking script in PATH to the repo. Inode preserved!"
