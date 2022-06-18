@@ -1,0 +1,7 @@
+#!/bin/sh
+
+gunzip *
+cat * > ${json_cat}
+cat ${json_cat} | jq | sed 's/^}$/},/g' > ${json_joined}
+echo "$header_list" > "${csv_file}"
+cat ${json_joined} | jq '.[].Item | [.Old.S,.New.S,.LastModified.N,.LastModifiedBy.S] | @csv' | sed 's/^...//' | sed 's/.$/,/' | sed 's/\\"//g' >> ${csv_file}
