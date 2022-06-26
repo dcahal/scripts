@@ -1,6 +1,6 @@
 #!/bin/sh
 
 # ecsstart [cluster] [service]
-#   Sets the cluster to run only 1 service. Useful for starting an idle cluster.
+#   Sets the cluster to allow exec and run only 1 container. Useful for checking that services deploy properly.
 
-aws ecs update-service --desired-count 1 --cluster "$1" --service "$2"
+aws ecs update-service --desired-count 1 --cluster "$1" --service "$2" --enable-execute-command
