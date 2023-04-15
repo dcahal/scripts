@@ -1,8 +1,9 @@
 #!/bin/sh
 
 vidnum=$1
+playlist_url=$2
 while [ true ] ; do
-    if [ $vidnum -gt 0 ] 2>/dev/null ; then
+    if [ ${vidnum} -gt 0 ] 2>/dev/null ; then
         break
     else
         printf "Enter number in video playlist: "
@@ -10,4 +11,4 @@ while [ true ] ; do
     fi
 done
 
-mpv --ytdl-raw-options="playlist-start=$vidnum" "$2"
+mpv --ytdl-raw-options="compat-options=youtube-dl,playlist-start=${vidnum}" "${playlist_url}"
