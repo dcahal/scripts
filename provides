@@ -1,0 +1,33 @@
+#!/bin/sh
+
+cmd="$1"
+distros="debian alpine fedora"
+set -- $distros
+
+for dist in "$@" ; do
+    relinfo=$(grep -o ${dist} /etc/*-release)
+    test -n "${relinfo}" \
+    && os=${dist} \
+    && break
+done
+
+exists=$(command -v "${cmd}")
+
+case $os in
+    debian )
+        test -n "${exists}" \
+        && dpkg -S $(realpath "${exists}") \
+        ;;
+    alpine )
+        test -n "${exists}" \
+        && apk info --who-owns $(realpath "${exists}")
+        ;;
+    fedora )
+        test -n "${exists}" \
+        && yum whatprovides $(realpath "${exists}")
+        ;;
+    * )
+        echo "provides: This script only supports systems based on debian, alpine, or fedora."
+        exit 2
+        ;;
+esac
