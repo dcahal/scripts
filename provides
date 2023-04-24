@@ -5,7 +5,7 @@ distros="debian alpine fedora"
 set -- $distros
 
 for dist in "$@" ; do
-    relinfo=$(grep -o ${dist} /etc/*-release)
+    relinfo=$(grep -so ${dist} /etc/*-release)
     test -n "${relinfo}" \
     && os=${dist} \
     && break
