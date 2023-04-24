@@ -1,0 +1,98 @@
+#!/bin/bash
+
+set -e
+
+conf_file="${HOME}/.config/ttv/ttv.conf"
+thumbnail_dir="/tmp/ttv_thumbnails"
+
+mapfile -t channel_list < "${conf_file}"
+declare -A online_list=()
+
+mkdir -p "${thumbnail_dir}"
+
+
+# Hit each of the given channels and print relevant information from the webplayer JSON in a numbered list.
+hits="0"
+printf "\n"
+for channel in ${channel_list[@]} ; do
+    json=$(curl -s https://www.twitch.tv/"${channel}" | awk -F '<script type=\"application\\/ld\\+json\">|<\\/script>' '/VideoObject/ {print $2}')
+    is_live=$(jq -r '.[].publication.isLiveBroadcast' <<< "${json}")
+    if [[ -z "${json}" ]] ; then
+        continue
+    elif [[ "${is_live}" == "true" ]] ; then
+        thumbnail="${thumbnail_dir}/ttv_${channel}.jpg"
+        remote_thumbnail=$(jq -r '.[].thumbnailUrl[] | select(contains("640x"))' <<< "${json}")
+        name=$(jq -r '.[].name' <<< "${json}" | cut -d' ' -f1)
+        title=$(jq -r '.[].description' <<< "${json}")
+        started_utc=$(jq -r '.[].publication.startDate' <<< "${json}")
+        seconds_live=$(bc <<< "$(date +%s)-$(date -d ${started_utc} +%s)")
+        hours=$(bc <<< "${seconds_live}/3600")
+        minutes=$(bc <<< "${seconds_live}/60%60")
+        curl -Lso "${thumbnail}" "${remote_thumbnail}"
+        display "${thumbnail}" &
+        hits=$(("$hits" + 1))
+        printf "\t\033[32m%d. \033[1;37m\t%s \033[32m%s \033[1;37m%dh %dm \033[32m:\033[m\n" "${hits}" "${name}" "has been live for" "${hours}" "${minutes}"
+        printf "\033[33m\t\t\t%s\033[m\n" "${title}"
+        online_list[${hits}]="${channel}"
+    else
+        name=$(jq -r '.[].name' <<< "${json}" | cut -d' ' -f1)
+        title=$(jq -r '.[].description' <<< "${json}")
+        printf "\t\t%s \033[1;31m%s\033[m\n" "${name}" "is showing a pre-recorded video:"
+        printf "\033[1;31m\t\t\t%s\033[m\n" "${title}"
+    fi
+    printf "\n\n"
+done
+
+# Prompt user to choose which arguments to pass to mpv.
+watch_select() {
+    printf "Play stream now [1-9] & lower quality [7/4]: "
+    read -r selected quality
+    test -z "${online_list[$selected]}" \
+    && read -p "There aren't that many streams to choose from! Try a number from the list: " selected quality
+
+    case $selected in
+        [0-9] )
+            play_channel "${online_list[$selected]}" "${quality}"
+            ;;
+        * )
+            exit
+            ;;
+
+    esac
+}
+
+# Pass arguments to mpv and open video stream.
+play_channel() {
+
+    if [[ -z "${quality}" ]] ; then
+        quality="best"
+    else
+        case $quality in
+            [7]|720 )
+                quality="best[height<=720]"
+                ;;
+            [4]|480 )
+                quality="best[height<=480]"
+                ;;
+            [3]|360 )
+                quality="best[height<=360]"
+                ;;
+        esac
+    fi
+    
+    start_mpv() {
+        mpv --ytdl-format="$quality" https://twitch.tv/"${online_list[$selected]}" > /dev/null 2>&1 &
+        return
+    }
+    
+    start_mpv
+    
+    if [[ "$?" = 2 ]] ; then
+        echo Twitch channel "\"${online_list[$selected]}\"" is offline or not found.
+    fi
+}
+
+test "${hits}" -lt "1" && echo "Nobody online!"
+test -n "$1" && test "${hits}" -gt "0" && test "$1" = "watch" && watch_select
+
+rm -r "${thumbnail_dir}"
